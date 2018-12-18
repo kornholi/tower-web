@@ -35,6 +35,7 @@ pub mod async_await {
     use futures::Future;
 
     use std::future::{Future as StdFuture};
+    use ::error::Map;
 
     /// Converts a `std::future::Future` to a boxed stable future.
     ///
@@ -46,7 +47,7 @@ pub mod async_await {
     {
         use tokio_async_await::compat::backward;
 
-        let future = backward::Compat::new(map_ok(future));
+        let future = Map::new(backward::Compat::new(map_ok::<_, ::Error>(future)));
         Box::new(future)
     }
 
