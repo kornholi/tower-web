@@ -17,3 +17,4 @@ tower-web = { version = "0.3.7", path = "../..", features = ["async-await-previe
 tokio = "0.1.10"
 hyper = "0.12.10"
 futures = "0.1.18"
+futures03-util = { package = "futures-util", version = "0.3.1" }

@@ -19,12 +19,13 @@
 //!
 //!     curl -v http://localhost:8080/
 
-#![feature(await_macro, async_await)]
-
 use tokio::prelude::*;
-use tokio::await;
 use tower_web::ServiceBuilder;
 use tower_web::{impl_web, derive_resource_impl};
+
+use futures03_util::compat::Future01CompatExt;
+use futures03_util::compat::Stream01CompatExt;
+use futures03_util::stream::StreamExt;
 
 use std::str;
 
@@ -52,16 +53,16 @@ impl_web! {
             let uri = "http://httpbin.org/ip".parse().unwrap();
 
             // Issue the request and wait for the response
-            let response = await!(self.client.get(uri)).unwrap();
+            let response = self.client.get(uri).compat().await.unwrap();
 
             // Get the body component of the HTTP response. This is a stream and as such, it must
             // be asynchronously collected.
-            let mut body = response.into_body();
+            let mut body = response.into_body().compat();
 
             // The body chunks will be appended to this string.
             let mut ret = String::new();
 
-            while let Some(chunk) = await!(body.next()) {
+            while let Some(chunk) = body.next().await {
                 let chunk = chunk.unwrap();
 
                 // Convert to a string
